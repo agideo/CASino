@@ -16,9 +16,9 @@
       setTimeout(checkCookieExists, 1000);
     }
   }
-
   // Auto-login when logged-in in other browser window (9887c4e)
-  doc.addEventListener('DOMContentLoaded', function() {
+
+  var loadCallback = function() {
     if(ready_bound) {
       return;
     }
@@ -26,6 +26,13 @@
     if(doc.getElementById('login-form')) {
       checkCookieExists();
     }
-  });
+  }
+
+  if (doc.addEventListener) {
+    doc.addEventListener('DOMContentLoaded', loadCallback);
+  }else {
+    doc.attachEvent('readystatechange', loadCallback);
+  }
+
 
 })(this, document);
