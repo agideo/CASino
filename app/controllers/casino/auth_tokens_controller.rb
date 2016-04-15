@@ -3,7 +3,14 @@ class CASino::AuthTokensController < CASino::ApplicationController
 
   def login
     validation_result = validation_service.validation_result
-    return redirect_to_login unless validation_result
+    unless validation_result
+      Iptables.mark(request.remote_ip)
+      if Iptables.count_mark(request.remote_ip) >= 10
+        Iptables.reject request.remote_ip, 30.minutes
+      end
+      return redirect_to_login
+    end
+    Iptables.delete(request.remote_ip)
     sign_in(validation_result)
   end
 
